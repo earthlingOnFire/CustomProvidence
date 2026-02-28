@@ -13,7 +13,7 @@ namespace CustomProvidence;
 public class Plugin : BaseUnityPlugin {	
   public const string PLUGIN_GUID = "com.earthlingOnFire.CustomProvidence";
   public const string PLUGIN_NAME = "CustomProvidence";
-  public const string PLUGIN_VERSION = "1.0.0";
+  public const string PLUGIN_VERSION = "1.0.1";
   public static ManualLogSource logger;
   public static string modDir;
   public static List<string> FileExtensions = new List<string> {".jpeg", ".jpg", ".png", ".bmp"};
