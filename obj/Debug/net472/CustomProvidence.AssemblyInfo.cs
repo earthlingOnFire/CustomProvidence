@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Lets you customize the eye of providence.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1+5c4ecc0f2d5ed833d9391ce68e7d9390bc7554d5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1+1a830755933fb1be6a35379a48836c04c5425f9d")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomProvidence")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomProvidence")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.1.0")]

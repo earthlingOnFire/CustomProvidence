@@ -21,18 +21,26 @@ public class Plugin : BaseUnityPlugin {
   public static ConfigBuilder config;
   public static System.Random rand = new System.Random();
 
+  public static string modAppdata;
+  public static string textureFolder;
   public static string modDir;
   public static List<string> FileExtensions = new List<string> {".jpeg", ".jpg", ".png", ".bmp"};
 
+  public static Texture2D[] textures;
+
 	// [Configgable("", "Enabled", 0, "asdf")]
 	[Configgable("", "Enabled")]
-	private static ConfigToggle EnabledToggle = new ConfigToggle(true);
+	public static ConfigToggle EnabledToggle = new ConfigToggle(true);
 
-	// [Configgable("", "Reload Textures")]
-	// public static ConfigButton ReloadButton = new ConfigButton((Action)ReloadImages, (string)null);
-	
-	// [Configgable("", "Open Textures Folder")]
-	// public static ConfigButton OpenImagesFolder = new ConfigButton((Action)delegate
+	[Configgable("", "Reload Textures")]
+	public static ConfigButton ReloadTexturesButton = new ConfigButton(delegate {
+	     TextureManager.ReloadTextures();
+	 });
+
+	[Configgable("", "Open Textures Folder")]
+	public static ConfigButton OpenTexturesFolderButton = new ConfigButton(delegate {
+      Application.OpenURL(modAppdata);
+  });
 
   private void Awake() {
     gameObject.hideFlags = HideFlags.HideAndDontSave;
@@ -42,6 +50,19 @@ public class Plugin : BaseUnityPlugin {
   private void Start() {
     string modPath = Assembly.GetExecutingAssembly().Location.ToString();
     modDir = Path.GetDirectoryName(modPath);
+
+    string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+    modAppdata = Path.Combine(appdata, "CustomProvidence");
+    textureFolder = Path.Combine(modAppdata, "textures");
+
+    if (!Directory.Exists(modAppdata)) {
+      Directory.CreateDirectory(modAppdata);
+      Directory.CreateDirectory(textureFolder);
+      File.Copy(Path.Combine(modDir, "shittyprovidence.png"),
+          Path.Combine(textureFolder, "shittyprovidence.png"));
+    }
+
+    TextureManager.ReloadTextures();
 
     new ConfigBuilder(PLUGIN_GUID, PLUGIN_NAME).BuildAll(); 
     new Harmony(PLUGIN_GUID).PatchAll();
@@ -54,9 +75,11 @@ public static class Patches {
   [HarmonyPostfix]
   [HarmonyPatch(typeof(EnemyIdentifier), "Start")]
   public static void ChangeEye(EnemyIdentifier __instance) {
-    if (__instance.enemyType != EnemyType.Providence || __instance.puppet == true) return;
+    if (Plugin.EnabledToggle.Value == false
+        || __instance.enemyType != EnemyType.Providence
+        || __instance.puppet == true) return;
 
-    Texture2D texture = LoadRandomTexture();
+    Texture2D texture = TextureManager.GetRandomTexture();
     
     if (texture == null) return;
 
@@ -67,39 +90,5 @@ public static class Patches {
     MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
     propertyBlock.SetTexture("_MainTex", texture);
     eye.GetComponent<SkinnedMeshRenderer>().SetPropertyBlock(propertyBlock);
-  }
-
-  public static Texture2D LoadRandomTexture() {
-    string textureFolder = Path.Combine(Plugin.modDir, "textures");
-    string[] texturePaths = GetImagePaths(textureFolder);
-
-    if (texturePaths.Length == 0) {
-      Plugin.logger.LogWarning("No images found in textures folder");
-      return null;
-    }
-
-    int randomIndex = Plugin.rand.Next(0, texturePaths.Length);
-    return LoadTextureFromFile(texturePaths[randomIndex]);
-  }
-
-  public static string[] GetImagePaths(string dirPath) {
-    string[] filePaths = Directory.GetFiles(dirPath);
-    return Array.FindAll(filePaths, x => IsImage(x));
-  }
-
-  public static bool IsImage(string filePath) {
-    foreach (string fileExtension in Plugin.FileExtensions) {
-      if (filePath.EndsWith(fileExtension)) return true;
-    }
-    return false;
-  }
-
-  public static Texture2D LoadTextureFromFile(string filePath) {
-    byte[] fileData = File.ReadAllBytes(filePath);
-
-    Texture2D tex = new Texture2D(2,2);
-    ImageConversion.LoadImage(tex, fileData);
-
-    return tex;
   }
 }
