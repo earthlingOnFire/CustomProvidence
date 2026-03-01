@@ -23,12 +23,12 @@ public class Plugin : BaseUnityPlugin {
 
   public static string modAppdata;
   public static string textureFolder;
+  public static string rareTextureFolder;
   public static string modDir;
   public static List<string> FileExtensions = new List<string> {".jpeg", ".jpg", ".png", ".bmp"};
 
   public static Texture2D[] textures;
 
-	// [Configgable("", "Enabled", 0, "asdf")]
 	[Configgable("", "Enabled")]
 	public static ConfigToggle EnabledToggle = new ConfigToggle(true);
 
@@ -42,6 +42,9 @@ public class Plugin : BaseUnityPlugin {
       Application.OpenURL(modAppdata);
   });
 
+	[Configgable("", "Rare Texture Chance", 0, "Chance to use a texture from 'rare textures' folder.")]
+	public static IntegerSlider RareTextureChanceSlider = new IntegerSlider(0, 0, 100);
+
   private void Awake() {
     gameObject.hideFlags = HideFlags.HideAndDontSave;
     Plugin.logger = Logger;
@@ -54,19 +57,32 @@ public class Plugin : BaseUnityPlugin {
     string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
     modAppdata = Path.Combine(appdata, "CustomProvidence");
     textureFolder = Path.Combine(modAppdata, "textures");
+    rareTextureFolder = Path.Combine(modAppdata, "rare textures");
 
+    CreateFolders();
+    TextureManager.ReloadTextures();
+
+    new ConfigBuilder(PLUGIN_GUID, PLUGIN_NAME).BuildAll(); 
+    new Harmony(PLUGIN_GUID).PatchAll();
+    logger.LogInfo($"Plugin {PLUGIN_GUID} is loaded!");
+  }
+
+  public static void CreateFolders() {
     if (!Directory.Exists(modAppdata)) {
       Directory.CreateDirectory(modAppdata);
+    }
+
+    if (!Directory.Exists(textureFolder)) {
       Directory.CreateDirectory(textureFolder);
       File.Copy(Path.Combine(modDir, "shittyprovidence.png"),
           Path.Combine(textureFolder, "shittyprovidence.png"));
     }
 
-    TextureManager.ReloadTextures();
-
-    new ConfigBuilder(PLUGIN_GUID, PLUGIN_NAME).BuildAll(); 
-    new Harmony(PLUGIN_GUID).PatchAll();
-    Plugin.logger.LogInfo($"Plugin {PLUGIN_GUID} is loaded!");
+    if (!Directory.Exists(rareTextureFolder)) {
+      Directory.CreateDirectory(rareTextureFolder);
+      File.Copy(Path.Combine(modDir, "rareshittyprovidence.png"),
+          Path.Combine(rareTextureFolder, "rareshittyprovidence.png"));
+    }
   }
 }
 

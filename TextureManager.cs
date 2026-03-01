@@ -7,6 +7,7 @@ namespace CustomProvidence;
 
 public static class TextureManager {
   public static Texture2D[] textures = new Texture2D[0];
+  public static Texture2D[] rareTextures = new Texture2D[0];
   public static List<string> FileExtensions = new List<string> {".jpeg", ".jpg", ".png", ".bmp"};
   public static System.Random rand = new System.Random();
 
@@ -17,11 +18,26 @@ public static class TextureManager {
     for (int i = 0; i < texturePaths.Length; i++) {
       textures[i] = LoadTextureFromFile(texturePaths[i]);
     }
+
+    string[] rareTexturePaths = GetImagePaths(Plugin.rareTextureFolder);
+    rareTextures = new Texture2D[rareTexturePaths.Length];
+
+    for (int i = 0; i < rareTexturePaths.Length; i++) {
+      rareTextures[i] = LoadTextureFromFile(rareTexturePaths[i]);
+    }
   }
 
   public static Texture2D GetRandomTexture() {
-    int randomIndex = Plugin.rand.Next(0, textures.Length);
-    return textures[0];
+    bool useRareTexture = rand.Next(0, 100) < Plugin.RareTextureChanceSlider.Value;
+
+    if (useRareTexture) {
+      int randomIndex = rand.Next(0, rareTextures.Length);
+      return rareTextures[randomIndex];
+    }
+    else {
+      int randomIndex = rand.Next(0, textures.Length);
+      return textures[randomIndex];
+    }
   }
 
   public static string[] GetImagePaths(string dirPath) {
