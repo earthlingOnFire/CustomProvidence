@@ -16,11 +16,13 @@ public class Plugin : BaseUnityPlugin {
   public const string PLUGIN_GUID = "com.earthlingOnFire.CustomProvidence";
   public const string PLUGIN_NAME = "CustomProvidence";
   public const string PLUGIN_VERSION = "1.0.1";
+
   public static ManualLogSource logger;
+  public static ConfigBuilder config;
+  public static System.Random rand = new System.Random();
+
   public static string modDir;
   public static List<string> FileExtensions = new List<string> {".jpeg", ".jpg", ".png", ".bmp"};
-  public static System.Random rand = new System.Random();
-	private ConfigBuilder config;
 
 	// [Configgable("", "Enabled", 0, "asdf")]
 	[Configgable("", "Enabled")]
@@ -62,7 +64,9 @@ public static class Patches {
     Component.Destroy(eye.GetComponent<AnimatedTexture>());
     Component.Destroy(eye.GetComponent<BlinkAnimTex>());
 
-    eye.GetComponent<SkinnedMeshRenderer>().material.mainTexture = texture;
+    MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+    propertyBlock.SetTexture("_MainTex", texture);
+    eye.GetComponent<SkinnedMeshRenderer>().SetPropertyBlock(propertyBlock);
   }
 
   public static Texture2D LoadRandomTexture() {
