@@ -15,7 +15,7 @@ namespace CustomProvidence;
 public class Plugin : BaseUnityPlugin {	
   public const string PLUGIN_GUID = "com.earthlingOnFire.CustomProvidence";
   public const string PLUGIN_NAME = "CustomProvidence";
-  public const string PLUGIN_VERSION = "1.0.1";
+  public const string PLUGIN_VERSION = "1.1.0";
 
   public static ManualLogSource logger;
   public static ConfigBuilder config;
