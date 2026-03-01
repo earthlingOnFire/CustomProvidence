@@ -6,10 +6,12 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
+using Configgy;
 
 namespace CustomProvidence;
 
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
+[BepInDependency("Hydraxous.ULTRAKILL.Configgy", BepInDependency.DependencyFlags.HardDependency)]
 public class Plugin : BaseUnityPlugin {	
   public const string PLUGIN_GUID = "com.earthlingOnFire.CustomProvidence";
   public const string PLUGIN_NAME = "CustomProvidence";
@@ -18,6 +20,17 @@ public class Plugin : BaseUnityPlugin {
   public static string modDir;
   public static List<string> FileExtensions = new List<string> {".jpeg", ".jpg", ".png", ".bmp"};
   public static System.Random rand = new System.Random();
+	private ConfigBuilder config;
+
+	// [Configgable("", "Enabled", 0, "asdf")]
+	[Configgable("", "Enabled")]
+	private static ConfigToggle EnabledToggle = new ConfigToggle(true);
+
+	// [Configgable("", "Reload Textures")]
+	// public static ConfigButton ReloadButton = new ConfigButton((Action)ReloadImages, (string)null);
+	
+	// [Configgable("", "Open Textures Folder")]
+	// public static ConfigButton OpenImagesFolder = new ConfigButton((Action)delegate
 
   private void Awake() {
     gameObject.hideFlags = HideFlags.HideAndDontSave;
@@ -28,6 +41,7 @@ public class Plugin : BaseUnityPlugin {
     string modPath = Assembly.GetExecutingAssembly().Location.ToString();
     modDir = Path.GetDirectoryName(modPath);
 
+    new ConfigBuilder(PLUGIN_GUID, PLUGIN_NAME).BuildAll(); 
     new Harmony(PLUGIN_GUID).PatchAll();
     Plugin.logger.LogInfo($"Plugin {PLUGIN_GUID} is loaded!");
   }

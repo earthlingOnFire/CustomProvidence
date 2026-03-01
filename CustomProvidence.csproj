@@ -25,6 +25,12 @@
     </Reference>
   </ItemGroup>
 
+   <ItemGroup>
+    <Reference Include="Configgy">
+      <HintPath>lib\Configgy.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Krafs.Publicizer" Version="2.2.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
